@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="light_primary">#BB1020</color>
+    <color name="light_element_background">#F3F5F9</color>
+    <color name="light_background">#FFFFFF</color>
+    <color name="light_text_hint">#868686</color>
+    <color name="light_text">#1E1E1E</color>
+
+    <color name="dark_primary">#BB1020</color>
+    <color name="dark_background">#1E1E1E</color>
+    <color name="dark_text_hint">#B5B5B5</color>
+    <color name="dark_text">#FFFFFF</color>
+    <color name="dark_element_background">#393939</color>
+
+    <!--    <color name="md_theme_dark_primary">#D0BCFF</color>-->
+    <!--    <color name="md_theme_dark_onPrimary">#381E72</color>-->
+    <!--    <color name="md_theme_dark_primaryContainer">#4F378B</color>-->
+    <!--    <color name="md_theme_dark_onPrimaryContainer">#EADDFF</color>-->
+    <!--    <color name="md_theme_dark_secondary">#CCC2DC</color>-->
+    <!--    <color name="md_theme_dark_onSecondary">#332D41</color>-->
+    <!--    <color name="md_theme_dark_secondaryContainer">#4A4458</color>-->
+    <!--    <color name="md_theme_dark_onSurface">#E6E1E5</color>-->
+    <!--    <color name="md_theme_dark_surfaceVariant">#49454F</color>-->
+</resources>
