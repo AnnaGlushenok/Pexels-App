@@ -11,7 +11,7 @@
         android:id="@+id/splash"
         android:layout_width="240dp"
         android:layout_height="240dp"
-        android:background="@drawable/splash"
+        android:background="@drawable/splash_icon"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
