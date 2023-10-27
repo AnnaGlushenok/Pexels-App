@@ -1,6 +1,9 @@
 package pexelsapp.pexelsapp
 
-data class SearchResult(
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+data class Photos(
     val total_results: Int,
     val page: Int,
     val per_page: Int,
@@ -8,7 +11,11 @@ data class SearchResult(
     val next_page: String?
 )
 
+@Entity(
+    tableName = "photos"
+)
 data class Photo(
+    @PrimaryKey(autoGenerate = true)
     val id: Int,
     val width: Int,
     val height: Int,
