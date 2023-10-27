@@ -2,7 +2,7 @@
     <string name="app_name">PexelsApp</string>
     <string name="search_hint">Search</string>
     <string name="bookmark_title">Bookmarks</string>
-    <string name="no_bookmark_stub">You haven't saved anything yet</string>
+    <string name="no_bookmark_stub">You haven\'t saved anything yet</string>
     <string name="explore">Explore</string>
     <string name="download">Download</string>
     <string name="try_again">Try Again</string>
