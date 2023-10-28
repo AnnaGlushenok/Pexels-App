@@ -9,4 +9,9 @@ class PhotoRepo(val photoDb: PhotoDatabase) {
     suspend fun searchPhotos(query: String, perPage: Int) =
         API.api.searchPhotos(query, perPage)
 
+    suspend fun upsert(photo: Photo) = photoDb.getPhotoDAO().upsert(photo)
+
+    fun getSavedPhotos() = photoDb.getPhotoDAO().getAllPhotos()
+
+    suspend fun deletePhoto(photo: Photo) = photoDb.getPhotoDAO().deletePhoto(photo)
 }

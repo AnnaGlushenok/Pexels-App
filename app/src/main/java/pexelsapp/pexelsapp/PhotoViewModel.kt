@@ -45,4 +45,14 @@ class PhotoViewModel(private val photoRepo: PhotoRepo) : ViewModel() {
         }
         return Resource.Error(response.message())
     }
+
+    fun savePhoto(photo: Photo) = viewModelScope.launch {
+        photoRepo.upsert(photo)
+    }
+
+    fun getSavedPhoto() = photoRepo.getSavedPhotos()
+
+    fun deletePhoto(photo: Photo) = viewModelScope.launch {
+        photoRepo.deletePhoto(photo)
+    }
 }
