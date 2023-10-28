@@ -8,19 +8,27 @@ import retrofit2.Response
 
 class PhotoViewModel(private val photoRepo: PhotoRepo) : ViewModel() {
     val photos: MutableLiveData<Resource<Photos>> = MutableLiveData()
-    var photoPage = 1
+    val searchPhotos: MutableLiveData<Resource<Photos>> = MutableLiveData()
+    private var photoPage = 1
+    private val countPhotos = 6
 
     init {
-        getPhotos(10)
+        getPhotos()
     }
 
-    fun getPhotos(perPage: Int) = viewModelScope.launch {
+    fun getPhotos() = viewModelScope.launch {
         photos.postValue(Resource.Loading())
-        val response = photoRepo.getPhotos(perPage)
-        photos.postValue(handleResponse(response))
+        val response = photoRepo.getPhotos(countPhotos)
+        photos.postValue(handlePhotosResponse(response))
     }
 
-    private fun handleResponse(response: Response<Photos>): Resource<Photos> {
+    fun searchPhotos(query: String) = viewModelScope.launch {
+        searchPhotos.postValue((Resource.Loading()))
+        val response = photoRepo.searchPhotos(query, countPhotos)
+        photos.postValue(handleSearchPhotosResponse(response))
+    }
+
+    private fun handlePhotosResponse(response: Response<Photos>): Resource<Photos> {
         if (response.isSuccessful) {
             response.body()?.let { res ->
                 return Resource.Success(res)
@@ -28,34 +36,13 @@ class PhotoViewModel(private val photoRepo: PhotoRepo) : ViewModel() {
         }
         return Resource.Error(response.message())
     }
-//        private var photos = MutableLiveData<List<Photo>>()
-//    val photos: LiveData<Photos>
-//        get() = photoRepo.photos
-//
-//    fun getPopularPhotos() {
-//        val retrofit = API.getAPI()
-//
-//        val apiService = retrofit.create(PhotoApi::class.java)
-//
-//        apiService.getCuratedPhotos(API.API_KEY, 3)
-//            .enqueue(object : Callback<Photos> {
-//                override fun onResponse(call: Call<Photos>, response: Response<Photos>) {
-//                    if (response.isSuccessful) {
-//                        val post = response.body()
-//                        photos.value = response.body()!!.photos
-//                        Log.d("Response", post.toString())
-//                    } else {
-//                        Log.e("Error", call.toString())
-//                    }
-//                }
-//
-//                override fun onFailure(call: Call<Photos>, t: Throwable) {
-//                    Log.e("Error", t.message.toString())
-//                }
-//            })
-//    }
-//
-//    fun observePhotos(): LiveData<List<Photo>> {
-//        return photos
-//    }
+
+    private fun handleSearchPhotosResponse(response: Response<Photos>): Resource<Photos> {
+        if (response.isSuccessful) {
+            response.body()?.let { res ->
+                return Resource.Success(res)
+            }
+        }
+        return Resource.Error(response.message())
+    }
 }

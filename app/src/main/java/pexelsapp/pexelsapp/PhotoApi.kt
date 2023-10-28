@@ -8,9 +8,15 @@ import retrofit2.http.Query
 interface PhotoApi {
     @GET("v1/curated")
     suspend fun getCuratedPhotos(
-        @Header("Authorization")
-        apiKey: String ,
-        @Query("per_page") perPage: Int
+        @Query("per_page") perPage: Int,
+        @Header("Authorization") apiKey: String = API.API_KEY
+    ): Response<Photos>
+
+    @GET("v1/search")
+    suspend fun searchPhotos(
+        @Query("query") query: String,
+        @Query("per_page") perPage: Int,
+        @Header("Authorization") apiKey: String = API.API_KEY
     ): Response<Photos>
 }
 

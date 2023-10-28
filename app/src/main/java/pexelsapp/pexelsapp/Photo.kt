@@ -2,6 +2,7 @@ package pexelsapp.pexelsapp
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.io.Serializable
 
 data class Photos(
     val total_results: Int,
@@ -27,7 +28,7 @@ data class Photo(
     val src: PhotoSource,
     val liked: Boolean,
     val alt: String
-)
+) : Serializable
 
 data class PhotoSource(
     val original: String,
@@ -38,6 +39,6 @@ data class PhotoSource(
     val portrait: String,
     val landscape: String,
     val tiny: String
-)
+) : Serializable
 
 
