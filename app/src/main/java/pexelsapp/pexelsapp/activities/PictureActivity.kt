@@ -41,6 +41,9 @@ class PictureActivity : AppCompatActivity() {
             viewModel.savePhoto(photo)
             Toast.makeText(this, "Saved", Toast.LENGTH_LONG).show()
         }
+        findViewById<ImageButton>(R.id.back_button).setOnClickListener {
+            onBackPressedDispatcher.onBackPressed()
+        }
     }
 
     private fun download(photo: Photo) {
