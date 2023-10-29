@@ -1,4 +1,4 @@
-package pexelsapp.pexelsapp
+package pexelsapp.pexelsapp.APIs
 
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -24,8 +24,12 @@ class API {
                 .build()
         }
 
-        val api by lazy {
+        val photoApi by lazy {
             retrofit.create(PhotoApi::class.java)
+        }
+
+        val featuredCollectionsApi by lazy {
+            retrofit.create(FeaturedCollectionsAPI::class.java)
         }
     }
 }

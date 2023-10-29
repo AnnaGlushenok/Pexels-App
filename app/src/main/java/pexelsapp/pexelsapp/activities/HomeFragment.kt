@@ -6,8 +6,13 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup.LayoutParams
+import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
+import android.widget.LinearLayout
+import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,10 +21,10 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import pexelsapp.pexelsapp.PhotoAdapter
-import pexelsapp.pexelsapp.PhotoViewModel
 import pexelsapp.pexelsapp.R
 import pexelsapp.pexelsapp.Resource
+import pexelsapp.pexelsapp.adapters.PhotoAdapter
+import pexelsapp.pexelsapp.viewModels.PhotoViewModel
 
 class HomeFragment : Fragment(R.layout.fragment_home) {
     private lateinit var viewModel: PhotoViewModel
@@ -29,6 +34,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private lateinit var searchEditText: EditText
     private lateinit var recyclerView1: RecyclerView
     private lateinit var recyclerView2: RecyclerView
+    private val buttons = mutableListOf<Button>()
+    private var prevButton: Button? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -37,6 +44,32 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         recyclerView2 = view.findViewById(R.id.photo_listView2)
         initButtons(view)
         setupRecycleView()
+        viewModel.featuredCollections.observe(viewLifecycleOwner, Observer { resp ->
+            when (resp) {
+                is Resource.Success -> {
+                    resp.data?.let { collResp ->
+                        val featured = view.findViewById<LinearLayout>(R.id.featured)
+                        val collections = collResp.collections
+                        for (i in 0..6)
+                            createButton(
+                                view,
+                                featured,
+                                collections[i].title
+                            )
+                    }
+                }
+
+                is Resource.Error -> {
+                    hideProgressBar()
+                    resp.message?.let { msg ->
+                        Log.e("err", msg)
+                        Toast.makeText(this.context, "Internet", Toast.LENGTH_LONG).show()
+                    }
+                }
+
+                is Resource.Loading -> showProgressBar()
+            }
+        })
         viewModel.photos.observe(viewLifecycleOwner, Observer { resp ->
             when (resp) {
                 is Resource.Success -> {
@@ -52,6 +85,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                     hideProgressBar()
                     resp.message?.let { msg ->
                         Log.e("err", msg)
+                        Toast.makeText(this.context, "Internet", Toast.LENGTH_LONG).show()
                     }
                 }
 
@@ -81,6 +115,40 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         })
     }
 
+    private fun createButton(view: View, container: LinearLayout, name: String) {
+        val button = Button(view.context)
+        button.id = View.generateViewId()
+        button.text = name
+        val layoutParams =
+            LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
+        layoutParams.setMargins(0, 0, 20, 0)
+        button.layoutParams = layoutParams
+        button.setBackgroundResource(R.drawable.feature_button_inactive)
+        button.isAllCaps = false
+        button.setOnClickListener {
+            button.setBackgroundResource(R.drawable.feature_button_active)
+            button.setTextColor(
+                ContextCompat.getColor(
+                    view.context,
+                    R.color.light_background
+                )
+            )
+            if (prevButton != null) {
+                prevButton?.setBackgroundResource(R.drawable.feature_button_inactive)
+                prevButton?.setTextColor(
+                    ContextCompat.getColor(
+                        view.context,
+                        R.color.light_text
+                    )
+                )
+            }
+            viewModel.searchPhotos(button.text.toString())
+            prevButton = button
+        }
+
+        container.addView(button)
+        buttons.add(button)
+    }
 
     private fun setupRecycleView() {
         photoAdapter1 = PhotoAdapter()
