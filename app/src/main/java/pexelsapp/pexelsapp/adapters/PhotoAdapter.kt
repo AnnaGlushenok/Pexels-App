@@ -8,6 +8,8 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.annotation.GlideModule
+import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.request.target.Target
 import pexelsapp.pexelsapp.R
 import pexelsapp.pexelsapp.data.Photo
 
@@ -46,6 +48,7 @@ class PhotoAdapter : RecyclerView.Adapter<PhotoAdapter.ViewHolder>() {
         holder.itemView.apply {
             Glide.with(this)
                 .load(photo.src.original)
+                .placeholder(R.drawable.image_placeholder_icon)
                 .into(findViewById(R.id.imageView))
             setOnClickListener {
                 onItemClickListener?.let { it(photo) }

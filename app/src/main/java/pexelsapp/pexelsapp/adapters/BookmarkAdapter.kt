@@ -47,6 +47,7 @@ class BookmarkAdapter : RecyclerView.Adapter<BookmarkAdapter.ViewHolder>() {
         holder.itemView.apply {
             Glide.with(this)
                 .load(photo.src.original)
+                .placeholder(R.drawable.image_placeholder_icon)
                 .into(findViewById(R.id.imageView))
             findViewById<TextView>(R.id.author).text = photo.photographer
             setOnClickListener {

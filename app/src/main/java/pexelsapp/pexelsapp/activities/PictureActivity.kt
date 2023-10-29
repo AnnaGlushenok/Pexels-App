@@ -34,6 +34,7 @@ class PictureActivity : AppCompatActivity() {
         val photo = intent.getSerializableExtra("photo") as Photo
         Glide.with(this)
             .load(photo.src.original)
+            .placeholder(R.drawable.image_placeholder_icon)
             .into(findViewById(R.id.picture))
         findViewById<TextView>(R.id.author).text = photo.photographer
         findViewById<LinearLayout>(R.id.download).setOnClickListener {
