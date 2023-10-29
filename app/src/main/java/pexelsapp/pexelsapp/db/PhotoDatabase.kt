@@ -5,7 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import pexelsapp.pexelsapp.Photo
+import pexelsapp.pexelsapp.data.Photo
 
 @Database(
     entities = [Photo::class],

@@ -1,4 +1,4 @@
-package pexelsapp.pexelsapp
+package pexelsapp.pexelsapp.data
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

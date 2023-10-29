@@ -13,12 +13,13 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
-import pexelsapp.pexelsapp.Photo
-import pexelsapp.pexelsapp.PhotoRepo
-import pexelsapp.pexelsapp.PhotoViewModel
-import pexelsapp.pexelsapp.PhotoViewModelFactory
 import pexelsapp.pexelsapp.R
+import pexelsapp.pexelsapp.data.Photo
 import pexelsapp.pexelsapp.db.PhotoDatabase
+import pexelsapp.pexelsapp.repositories.FeaturedCollectionsRepo
+import pexelsapp.pexelsapp.repositories.PhotoRepo
+import pexelsapp.pexelsapp.viewModels.PhotoViewModel
+import pexelsapp.pexelsapp.viewModels.PhotoViewModelFactory
 
 class PictureActivity : AppCompatActivity() {
     lateinit var viewModel: PhotoViewModel
@@ -26,7 +27,8 @@ class PictureActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_picture)
         val photoRepo = PhotoRepo(PhotoDatabase(this))
-        val viewModelFactory = PhotoViewModelFactory(photoRepo)
+        val featuredCollections = (FeaturedCollectionsRepo())
+        val viewModelFactory = PhotoViewModelFactory(photoRepo, featuredCollections, application)
         viewModel = ViewModelProvider(this, viewModelFactory)[PhotoViewModel::class.java]
 
         val photo = intent.getSerializableExtra("photo") as Photo

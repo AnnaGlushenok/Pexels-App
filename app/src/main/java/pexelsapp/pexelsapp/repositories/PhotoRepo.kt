@@ -1,13 +1,15 @@
-package pexelsapp.pexelsapp
+package pexelsapp.pexelsapp.repositories
 
+import pexelsapp.pexelsapp.APIs.API
+import pexelsapp.pexelsapp.data.Photo
 import pexelsapp.pexelsapp.db.PhotoDatabase
 
 class PhotoRepo(val photoDb: PhotoDatabase) {
     suspend fun getPhotos(perPage: Int) =
-        API.api.getCuratedPhotos(perPage)
+        API.photoApi.getCuratedPhotos(perPage)
 
     suspend fun searchPhotos(query: String, perPage: Int) =
-        API.api.searchPhotos(query, perPage)
+        API.photoApi.searchPhotos(query, perPage)
 
     suspend fun upsert(photo: Photo) = photoDb.getPhotoDAO().upsert(photo)
 

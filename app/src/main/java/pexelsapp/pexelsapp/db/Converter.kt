@@ -1,9 +1,8 @@
 package pexelsapp.pexelsapp.db
 
 import androidx.room.TypeConverter
-import pexelsapp.pexelsapp.PhotoSource
+import pexelsapp.pexelsapp.data.PhotoSource
 
-// TODO
 class Converter {
     @TypeConverter
     fun fromPhotoSource(photoSource: PhotoSource): String {

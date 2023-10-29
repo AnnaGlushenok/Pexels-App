@@ -1,5 +1,6 @@
-package pexelsapp.pexelsapp
+package pexelsapp.pexelsapp.APIs
 
+import pexelsapp.pexelsapp.data.Photos
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Header

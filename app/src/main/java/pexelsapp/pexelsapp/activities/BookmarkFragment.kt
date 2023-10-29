@@ -7,9 +7,9 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import pexelsapp.pexelsapp.BookmarkAdapter
-import pexelsapp.pexelsapp.PhotoViewModel
 import pexelsapp.pexelsapp.R
+import pexelsapp.pexelsapp.adapters.BookmarkAdapter
+import pexelsapp.pexelsapp.viewModels.PhotoViewModel
 
 class BookmarkFragment : Fragment(R.layout.fragment_bookmark) {
     private lateinit var viewModel: PhotoViewModel
