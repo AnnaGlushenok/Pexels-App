@@ -6,11 +6,13 @@ import android.net.ConnectivityManager
 import android.net.ConnectivityManager.TYPE_MOBILE
 import android.net.ConnectivityManager.TYPE_WIFI
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import pexelsapp.pexelsapp.Error
 import pexelsapp.pexelsapp.PhotoApplication
-import pexelsapp.pexelsapp.Resource
+import pexelsapp.pexelsapp.State
 import pexelsapp.pexelsapp.data.FeaturedCollections
 import pexelsapp.pexelsapp.data.Photo
 import pexelsapp.pexelsapp.data.Photos
@@ -25,9 +27,14 @@ class PhotoViewModel(
     app: Application
 ) :
     AndroidViewModel(app) {
-    val photos: MutableLiveData<Resource<Photos>> = MutableLiveData()
-    val searchPhotos: MutableLiveData<Resource<Photos>> = MutableLiveData()
-    val featuredCollections: MutableLiveData<Resource<FeaturedCollections>> = MutableLiveData()
+    val photos: MutableLiveData<State<Photos>> = MutableLiveData()
+    val searchPhotos: MutableLiveData<State<Photos>> = MutableLiveData()
+    val featuredCollections: MutableLiveData<State<FeaturedCollections>> =
+        MutableLiveData()
+    private var _isLoadingProgressBar = MutableLiveData<Boolean>()
+    val isLoadingProgressBar: LiveData<Boolean>
+        get() = _isLoadingProgressBar
+
     private var photoPage = 1
     private val COUNT_PHOTOS = 6
     private val COUNT_COLLECTIONS = 7
@@ -42,39 +49,54 @@ class PhotoViewModel(
     }
 
     fun getPhotos() = viewModelScope.launch {
+        _isLoadingProgressBar.value = false
+        _isLoadingProgressBar.value = true
         safeGetPhotos(COUNT_PHOTOS)
     }
 
     fun searchPhotos(query: String) = viewModelScope.launch {
+        _isLoadingProgressBar.value = false
+        _isLoadingProgressBar.value = true
         safeSearchPhotos(query, COUNT_PHOTOS)
     }
 
-    private fun handlePhotosResponse(response: Response<Photos>): Resource<Photos> {
+    private fun handlePhotosResponse(
+        response: Response<Photos>,
+        message: String? = null
+    ): State<Photos> {
         if (response.isSuccessful) {
             response.body()?.let { res ->
-                return Resource.Success(res)
+                if (message != null)
+                    return State.Success(res, message)
+                return State.Success(res)
             }
         }
-        return Resource.Error(response.message())
+        return State.Error(response.message())
     }
 
-    private fun handleSearchPhotosResponse(response: Response<Photos>): Resource<Photos> {
+    private fun handleSearchPhotosResponse(
+        response: Response<Photos>,
+        message: String? = null
+    ): State<Photos> {
         if (response.isSuccessful) {
             response.body()?.let { res ->
-                return Resource.Success(res)
+                if (message != null)
+                    return State.Success(res, message)
+                return State.Success(res)
             }
         }
-        return Resource.Error(response.message())
+        return State.Error(response.message())
     }
 
-    private fun handleFeaturedCollectionsResponse(response: Response<FeaturedCollections>): Resource<FeaturedCollections> {
+    private fun handleFeaturedCollectionsResponse(response: Response<FeaturedCollections>): State<FeaturedCollections> {
         if (response.isSuccessful) {
             response.body()?.let { res ->
-                return Resource.Success(res)
+                return State.Success(res)
             }
         }
-        return Resource.Error(response.message())
+        return State.Error(response.message())
     }
+
     fun savePhoto(photo: Photo) = viewModelScope.launch {
         photoRepo.upsert(photo)
     }
@@ -86,53 +108,60 @@ class PhotoViewModel(
     }
 
     private suspend fun safeSearchPhotos(query: String, countPhotos: Int) {
-        searchPhotos.postValue(Resource.Loading())
+        searchPhotos.postValue(State.Loading())
         try {
-            if (isInternetConnected()) {
-                val response = photoRepo.searchPhotos(query, countPhotos)
-                searchPhotos.postValue(handleSearchPhotosResponse(response))
-            } else {
-                searchPhotos.postValue(Resource.Error("No internet connection"))
-            }
-        } catch (t: Throwable) {
-            when (t) {
-                is IOException -> searchPhotos.postValue(Resource.Error("No internet connection"))
-                else -> searchPhotos.postValue(Resource.Error("Err"))
-            }
+            val response = photoRepo.searchPhotos(query, countPhotos)
+            if ((response.body() == null) and !isInternetConnected())
+                searchPhotos.postValue(State.Error(Error.NO_INTERNET_CONNECTION.name))
+            else if (isInternetConnected() and response.body()?.photos!!.isNotEmpty())
+                searchPhotos.postValue(handlePhotosResponse(response))
+            else if (isInternetConnected() and response.body()?.photos!!.isEmpty())
+                searchPhotos.postValue(State.Error(Error.NO_DATA.name))
+            else if ((response.body() != null) and !isInternetConnected())
+                searchPhotos.postValue(
+                    handleSearchPhotosResponse(
+                        response,
+                        Error.NO_INTERNET_CONNECTION.name
+                    )
+                )
+        } catch (e: IOException) {
+            searchPhotos.postValue(State.Error(e.message.toString()))
         }
     }
 
     private suspend fun safeGetPhotos(countPhotos: Int) {
-        photos.postValue(Resource.Loading())
+        photos.postValue(State.Loading())
         try {
-            if (isInternetConnected()) {
-                val response = photoRepo.getPhotos(countPhotos)
+            val response = photoRepo.getPhotos(countPhotos)
+            if ((response.body() == null) and !isInternetConnected())
+                photos.postValue(State.Error(Error.NO_INTERNET_CONNECTION.name))
+            else if (isInternetConnected() and response.body()?.photos!!.isNotEmpty())
                 photos.postValue(handlePhotosResponse(response))
-            } else {
-                photos.postValue(Resource.Error("No internet connection"))
-            }
+            else if (isInternetConnected() and response.body()?.photos!!.isEmpty())
+                photos.postValue(State.Error(Error.NO_DATA.name))
+            else if ((response.body() != null) and !isInternetConnected())
+                photos.postValue(
+                    handleSearchPhotosResponse(
+                        response,
+                        Error.NO_INTERNET_CONNECTION.name
+                    )
+                )
         } catch (t: Throwable) {
-            when (t) {
-                is IOException -> photos.postValue(Resource.Error("No internet connection"))
-                else -> photos.postValue(Resource.Error("Err"))
-            }
+            photos.postValue(State.Error(t.message.toString()))
         }
     }
 
     private suspend fun safeGetFeaturedCollections(countPhotos: Int) {
-        featuredCollections.postValue(Resource.Loading())
+        featuredCollections.postValue(State.Loading())
         try {
             if (isInternetConnected()) {
                 val response = featuredCollectionsRepo.getFeaturedCollections(countPhotos)
                 featuredCollections.postValue(handleFeaturedCollectionsResponse(response))
             } else {
-                featuredCollections.postValue(Resource.Error("No internet connection"))
+                featuredCollections.postValue(State.Error(Error.NO_INTERNET_CONNECTION.name))
             }
         } catch (t: Throwable) {
-            when (t) {
-                is IOException -> photos.postValue(Resource.Error("No internet connection"))
-                else -> photos.postValue(Resource.Error("Err"))
-            }
+            photos.postValue(State.Error(t.message.toString()))
         }
     }
 
