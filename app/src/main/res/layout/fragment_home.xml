@@ -44,6 +44,77 @@
         </HorizontalScrollView>
     </LinearLayout>
 
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/light_background"
+        android:hapticFeedbackEnabled="false"
+        android:indeterminate="true"
+        android:indeterminateTint="@color/light_primary"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayoutHat" />
+
+    <LinearLayout
+        android:id="@+id/stub_layout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@+id/nestedScrollView"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayoutHat">
+
+
+        <LinearLayout
+            android:id="@+id/no_result"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/stub_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/mulish_regular"
+                android:text="@string/no_results_found"
+                android:textAlignment="center"
+                android:textColor="@color/light_text" />
+
+            <TextView
+                android:id="@+id/explore_text_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/mulish_bold"
+                android:text="@string/explore"
+                android:textAlignment="center"
+                android:textColor="@color/light_primary"
+                android:textSize="18sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/no_internet"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:src="@drawable/no_network_icon" />
+
+            <TextView
+                android:id="@+id/try_again_text_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/mulish_bold"
+                android:text="@string/try_again"
+                android:textAlignment="center"
+                android:textColor="@color/light_primary"
+                android:textSize="18sp" />
+        </LinearLayout>
+    </LinearLayout>
+
     <androidx.core.widget.NestedScrollView
         android:id="@+id/nestedScrollView"
         android:layout_width="match_parent"
