@@ -8,19 +8,27 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import pexelsapp.pexelsapp.PhotoRepo
-import pexelsapp.pexelsapp.PhotoViewModel
-import pexelsapp.pexelsapp.PhotoViewModelFactory
+import dagger.hilt.android.AndroidEntryPoint
 import pexelsapp.pexelsapp.R
+import pexelsapp.pexelsapp.databinding.ActivityMainBinding
 import pexelsapp.pexelsapp.db.PhotoDatabase
+import pexelsapp.pexelsapp.repositories.FeaturedCollectionsRepo
+import pexelsapp.pexelsapp.repositories.PhotoRepo
+import pexelsapp.pexelsapp.viewModels.PhotoViewModel
+import pexelsapp.pexelsapp.viewModels.PhotoViewModelFactory
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     lateinit var viewModel: PhotoViewModel
+    lateinit var bind: ActivityMainBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        bind = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(bind.root)
         val photoRepo = PhotoRepo(PhotoDatabase(this))
-        val viewModelFactory = PhotoViewModelFactory(photoRepo)
+        val featuredCollections = FeaturedCollectionsRepo()
+        val viewModelFactory = PhotoViewModelFactory(photoRepo, featuredCollections, application)
         viewModel = ViewModelProvider(this, viewModelFactory)[PhotoViewModel::class.java]
         val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottom_navigation)
         val underline: View = findViewById(R.id.underline)
@@ -36,7 +44,7 @@ class MainActivity : AppCompatActivity() {
             }
             underline.layoutParams = layoutParams
             true
-        }//8oNMTj6gLf4bARFR36MVJxryWmSQRuIUk7y8H2L7cnkrGCCJ1erx8C5c
+        }
         bottomNavigationView.setupWithNavController(navController)
     }
 }

@@ -49,10 +49,8 @@ class BookmarkFragment : Fragment(R.layout.fragment_bookmark) {
         })
 
         exploreTextButton.setOnClickListener {
-            val fragment = HomeFragment()
-            val fragmentManager = requireActivity().supportFragmentManager
-            val transaction = fragmentManager.beginTransaction()
-            transaction.replace(R.id.fragment, fragment)
+            val transaction = requireActivity().supportFragmentManager.beginTransaction()
+            transaction.replace(R.id.fragment, HomeFragment())
             transaction.addToBackStack(null)
             transaction.commit()
         }

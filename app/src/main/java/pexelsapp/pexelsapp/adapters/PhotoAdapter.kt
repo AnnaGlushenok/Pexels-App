@@ -8,8 +8,6 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.annotation.GlideModule
-import com.bumptech.glide.request.RequestOptions
-import com.bumptech.glide.request.target.Target
 import pexelsapp.pexelsapp.R
 import pexelsapp.pexelsapp.data.Photo
 

@@ -3,8 +3,9 @@ package pexelsapp.pexelsapp.repositories
 import pexelsapp.pexelsapp.APIs.API
 import pexelsapp.pexelsapp.data.Photo
 import pexelsapp.pexelsapp.db.PhotoDatabase
+import javax.inject.Inject
 
-class PhotoRepo(val photoDb: PhotoDatabase) {
+class PhotoRepo @Inject constructor(val photoDb: PhotoDatabase) {
     suspend fun getPhotos(perPage: Int) =
         API.photoApi.getCuratedPhotos(perPage)
 

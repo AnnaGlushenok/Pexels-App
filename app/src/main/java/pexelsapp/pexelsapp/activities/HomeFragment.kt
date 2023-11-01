@@ -29,6 +29,7 @@ import pexelsapp.pexelsapp.LastRequest
 import pexelsapp.pexelsapp.R
 import pexelsapp.pexelsapp.State
 import pexelsapp.pexelsapp.adapters.PhotoAdapter
+import pexelsapp.pexelsapp.data.Photos
 import pexelsapp.pexelsapp.viewModels.PhotoViewModel
 
 class HomeFragment : Fragment(R.layout.fragment_home) {
@@ -107,85 +108,52 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 showProgressBar()
         })
         viewModel.photos.observe(viewLifecycleOwner, Observer { resp ->
-            when (resp) {
-                is State.Success -> {
-                    if (resp.message != null)
-                        Toast.makeText(
-                            view.context,
-                            "No internet connection, using cache",
-                            Toast.LENGTH_LONG
-                        ).show()
-                    resp.data?.let { photosResp ->
-                        val p = photosResp.photos
-                        photoAdapter1.differ.submitList(p.subList(0, p.size / 2))
-                        photoAdapter2.differ.submitList(p.subList(p.size / 2, p.size))
-                    }
-                    showPage()
-                    hideProgressBar()
-                }
-
-                is State.Error -> {
-                    resp.message?.let { msg ->
-                        val enum = try {
-                            Error.valueOf(msg)
-                        } catch (e: IllegalArgumentException) {
-                            null
-                        }
-                        when (enum) {
-                            Error.NO_INTERNET_CONNECTION -> showNoInternetStub(view)
-                            Error.NO_DATA -> {
-                                hideProgressBar()
-                                showNoDataStub()
-                            }
-
-                            null -> Log.e("err", msg)
-                        }
-                    }
-                }
-
-                is State.Loading -> showProgressBar()
-            }
+            observeResponse(resp, view)
         })
         viewModel.searchPhotos.observe(viewLifecycleOwner, Observer { resp ->
-            when (resp) {
-                is State.Success -> {
-                    if (resp.message != null)
-                        Toast.makeText(
-                            view.context,
-                            "No internet connection, using cache",
-                            Toast.LENGTH_LONG
-                        ).show()
-                    resp.data?.let { photosResp ->
-                        val p = photosResp.photos
-                        photoAdapter1.differ.submitList(p.subList(0, p.size / 2))
-                        photoAdapter2.differ.submitList(p.subList(p.size / 2, p.size))
-                    }
-                    showPage()
-                    hideProgressBar()
-                }
-
-                is State.Error -> {
-                    resp.message?.let { msg ->
-                        val enum = try {
-                            Error.valueOf(msg)
-                        } catch (e: IllegalArgumentException) {
-                            null
-                        }
-                        when (enum) {
-                            Error.NO_INTERNET_CONNECTION -> showNoInternetStub(view)
-                            Error.NO_DATA -> {
-                                hideProgressBar()
-                                showNoDataStub()
-                            }
-
-                            null -> Log.e("err", msg)
-                        }
-                    }
-                }
-
-                is State.Loading -> showProgressBar()
-            }
+            observeResponse(resp, view)
         })
+    }
+
+    private fun observeResponse(resp: State<Photos>, view: View) {
+        when (resp) {
+            is State.Success -> {
+                if (resp.message != null)
+                    Toast.makeText(
+                        view.context,
+                        "No internet connection, using cache",
+                        Toast.LENGTH_LONG
+                    ).show()
+                resp.data?.let { photosResp ->
+                    val p = photosResp.photos
+                    photoAdapter1.differ.submitList(p.subList(0, p.size / 2))
+                    photoAdapter2.differ.submitList(p.subList(p.size / 2, p.size))
+                }
+                showPage()
+                hideProgressBar()
+            }
+
+            is State.Error -> {
+                resp.message?.let { msg ->
+                    val enum = try {
+                        Error.valueOf(msg)
+                    } catch (e: IllegalArgumentException) {
+                        null
+                    }
+                    when (enum) {
+                        Error.NO_INTERNET_CONNECTION -> showNoInternetStub(view)
+                        Error.NO_DATA -> {
+                            hideProgressBar()
+                            showNoDataStub()
+                        }
+
+                        null -> Log.e("err", msg)
+                    }
+                }
+            }
+
+            is State.Loading -> showProgressBar()
+        }
     }
 
     private fun showNoInternetStub(view: View) {
@@ -212,6 +180,26 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         nestedScrollView.visibility = View.VISIBLE
     }
 
+    private fun setActive(button: Button, view: View) {
+        button.setBackgroundResource(R.drawable.feature_button_active)
+        button.setTextColor(
+            ContextCompat.getColor(
+                view.context,
+                R.color.light_background
+            )
+        )
+    }
+
+    private fun setInactive(button: Button?, view: View) {
+        button?.setBackgroundResource(R.drawable.feature_button_inactive)
+        button?.setTextColor(
+            ContextCompat.getColor(
+                view.context,
+                R.color.light_text
+            )
+        )
+    }
+
     private fun createButton(view: View, container: LinearLayout, name: String) {
         val button = Button(view.context)
         button.id = View.generateViewId()
@@ -224,23 +212,11 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         button.isAllCaps = false
         button.setOnClickListener {
             lastRequest = LastRequest.FEATURED_BUTTON
-            button.setBackgroundResource(R.drawable.feature_button_active)
-            button.setTextColor(
-                ContextCompat.getColor(
-                    view.context,
-                    R.color.light_background
-                )
-            )
+            setActive(button, view)
             lastRequestStr = button.text.toString()
-            if (prevButton != null) {
-                prevButton?.setBackgroundResource(R.drawable.feature_button_inactive)
-                prevButton?.setTextColor(
-                    ContextCompat.getColor(
-                        view.context,
-                        R.color.light_text
-                    )
-                )
-            }
+            if (prevButton != null)
+                setInactive(prevButton, view)
+
             searchEditText.setText(button.text.toString())
             prevButton = button
         }
@@ -296,13 +272,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 if (s?.isEmpty() == true) {
                     clearButton.visibility = View.INVISIBLE
                     viewModel.getPhotos()
-                    prevButton?.setBackgroundResource(R.drawable.feature_button_inactive)
-                    prevButton?.setTextColor(
-                        ContextCompat.getColor(
-                            view.context,
-                            R.color.light_text
-                        )
-                    )
+                    setInactive(prevButton, view)
                 }
                 job?.cancel()
                 job = MainScope().launch {
@@ -313,22 +283,10 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                             viewModel.searchPhotos(lastRequestStr)
                         val button = buttons.find { b -> b.text == lastRequestStr }
                         if (button != null) {
-                            button.setBackgroundResource(R.drawable.feature_button_active)
-                            button.setTextColor(
-                                ContextCompat.getColor(
-                                    view.context,
-                                    R.color.light_background
-                                )
-                            )
+                            setActive(button, view)
                             prevButton = button
                         } else {
-                            prevButton?.setBackgroundResource(R.drawable.feature_button_inactive)
-                            prevButton?.setTextColor(
-                                ContextCompat.getColor(
-                                    view.context,
-                                    R.color.light_text
-                                )
-                            )
+                            setInactive(prevButton, view)
                         }
                     }
                 }

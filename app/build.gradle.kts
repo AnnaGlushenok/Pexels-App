@@ -3,6 +3,7 @@ plugins {
 //    id("org.jetbrains.kotlin.android")
     id("kotlin-android")
     id("kotlin-kapt")
+    id("com.google.dagger.hilt.android") version "2.44" apply false
 }
 
 android {
@@ -40,6 +41,7 @@ android {
     }
     buildFeatures {
         compose = true
+        viewBinding = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.4.3"
@@ -64,6 +66,10 @@ dependencies {
 //    DAGGER
     implementation("com.google.dagger:dagger:2.48.1")
     annotationProcessor("com.google.dagger:dagger-compiler:2.48.1")
+//    implementation("com.google.dagger:hilt-android:2.44")
+    implementation("androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03")
+    kapt("androidx.hilt:hilt-compiler:1.1.0")
+//    kapt("com.google.dagger:hilt-android-compiler:2.44")
 //    ROOM
     implementation("androidx.room:room-runtime:2.6.0")
     kapt("androidx.room:room-compiler:2.6.0")
@@ -79,6 +85,8 @@ dependencies {
 //    GLIDE
     implementation("com.github.bumptech.glide:glide:4.16.0")
     annotationProcessor("com.github.bumptech.glide:compiler:4.10.0")
+    implementation("com.facebook.shimmer:shimmer:0.5.0")
+
 //    NAV
     implementation("androidx.navigation:navigation-fragment-ktx:2.7.4")
     implementation("androidx.navigation:navigation-ui-ktx:2.7.4")

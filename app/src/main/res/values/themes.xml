@@ -19,16 +19,6 @@
 
     </style>
 
-    <style name="PrimaryButton">
-        <item name="android:backgroundTint">@color/light_primary</item>
-        <item name="android:textColor">@color/light_background</item>
-    </style>
-
-    <style name="SecondaryButton">
-        <item name="android:backgroundTint">@color/light_element_background</item>
-        <item name="android:textColor">@color/light_text</item>
-    </style>
-
     <style name="TextButton">
         <item name="android:textSize">18dp</item>
         <item name="android:font">@font/mulish_bold</item>

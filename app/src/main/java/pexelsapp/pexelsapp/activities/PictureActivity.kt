@@ -43,7 +43,6 @@ class PictureActivity : AppCompatActivity() {
         picture = findViewById(R.id.picture)
 
         val photo = intent.getSerializableExtra("photo") as Photo
-//        findViewById<LinearLayout>(R.id.stub_layout).visibility = View.VISIBLE
         Glide.with(this)
             .load(photo.src.original)
             .placeholder(R.drawable.image_placeholder_icon)
