@@ -2,12 +2,16 @@ package pexelsapp.pexelsapp.activities
 
 import android.app.DownloadManager
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.util.Log
+import android.view.View
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -23,6 +27,10 @@ import pexelsapp.pexelsapp.viewModels.PhotoViewModelFactory
 
 class PictureActivity : AppCompatActivity() {
     lateinit var viewModel: PhotoViewModel
+    private lateinit var bookmark: ImageButton
+    private lateinit var picture: ImageView
+    private lateinit var exploreTextButton: TextView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_picture)
@@ -30,22 +38,32 @@ class PictureActivity : AppCompatActivity() {
         val featuredCollections = (FeaturedCollectionsRepo())
         val viewModelFactory = PhotoViewModelFactory(photoRepo, featuredCollections, application)
         viewModel = ViewModelProvider(this, viewModelFactory)[PhotoViewModel::class.java]
+        bookmark = findViewById(R.id.bookmark_btn)
+        exploreTextButton = findViewById(R.id.explore_text_button)
+        picture = findViewById(R.id.picture)
 
         val photo = intent.getSerializableExtra("photo") as Photo
+//        findViewById<LinearLayout>(R.id.stub_layout).visibility = View.VISIBLE
         Glide.with(this)
             .load(photo.src.original)
             .placeholder(R.drawable.image_placeholder_icon)
-            .into(findViewById(R.id.picture))
+            .into(picture)
         findViewById<TextView>(R.id.author).text = photo.photographer
         findViewById<LinearLayout>(R.id.download).setOnClickListener {
             download(photo)
         }
-        findViewById<ImageButton>(R.id.bookmark_btn).setOnClickListener {
+        findViewById<ProgressBar>(R.id.progressBar).visibility = View.INVISIBLE
+
+        bookmark.setOnClickListener {
             viewModel.savePhoto(photo)
+            bookmark.setImageResource(R.drawable.bookmark_icon_active)
             Toast.makeText(this, "Saved", Toast.LENGTH_LONG).show()
         }
         findViewById<ImageButton>(R.id.back_button).setOnClickListener {
             onBackPressedDispatcher.onBackPressed()
+        }
+        exploreTextButton.setOnClickListener {
+            startActivity(Intent(this, HomeFragment::class.java))
         }
     }
 
